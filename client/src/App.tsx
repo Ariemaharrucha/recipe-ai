@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 interface IResult {
-  recipes: string[];
   dishName: string;
   ingredients: string[];
   howToMake: string[];
@@ -15,6 +14,7 @@ function App() {
 
   async function handleGenerateRecipe() {
     try {
+      setLoading(true)
       const res = await fetch("http://localhost:8000/recipes/", {
         method: "POST",
         headers: {
@@ -24,15 +24,17 @@ function App() {
       });
 
       const data = await res.json();
+      setRecipes(data);
       console.log(data);
     } catch (error) {
       console.log(error);
     } finally{
-      setLoading(true)
+      setLoading(false)
      }
   } 
   return (
     <main>
+    <section>
       <h1>make your food </h1>
       <input type="text" placeholder='ingredients' onChange={(e) => {
         setIngredients(e.target.value)
@@ -42,12 +44,33 @@ function App() {
       <select name="type" id="" onChange={(e) => {
         setStyle(e.target.value)
       }}>
-        <option value="chinese">chinise</option>
-        <option value="chinese">thailand</option>
-        <option value="chinese">filiphina</option>
+        <option value="chinese">Chinese</option>
+        <option value="thailand">thailand</option>
+        <option value="filiphina">filiphina</option>
       </select>
       <br /> <br />
       <button type="submit" disabled={loading} onClick={handleGenerateRecipe}>regenerate</button>
+    </section>
+    <section>
+
+      {recipes && (
+        <div>
+          <h3>{recipes.dishName}</h3>
+          <h2>recipe : </h2>
+          <ul>
+            {recipes.ingredients.map((item)=> {
+              return <li key={item}>{item}</li>
+            })}
+          </ul>
+          <h2>how to cook</h2>
+                    <ul>
+            {recipes.howToMake.map((item)=> {
+              return <li key={item}>{item}</li>
+            })}
+          </ul>
+        </div>
+      )}
+    </section>
     </main>
   )
 }
