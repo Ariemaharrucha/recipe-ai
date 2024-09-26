@@ -1,49 +1,16 @@
-import { useState } from 'react'
-
-interface IResult {
-  dishName: string;
-  ingredients: string[];
-  howToMake: string[];
-}
+import { useIngredients } from "./hooks/useIngredients"
 
 function App() {
-  const [ingredients, setIngredients] = useState('')
-  const [style, setStyle] = useState('')
-  const [recipes, setRecipes] = useState<IResult | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function handleGenerateRecipe() {
-    try {
-      setLoading(true)
-      const res = await fetch("http://localhost:8000/recipes/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ingredients, style }),
-      });
-
-      const data = await res.json();
-      setRecipes(data);
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    } finally{
-      setLoading(false)
-     }
-  } 
+  const {ingredients, style, recipes, loading, handleGenerateRecipe, handleIngredientsChange, handleStyleChange} = useIngredients();
+  
   return (
     <main>
     <section>
       <h1>make your food </h1>
-      <input type="text" placeholder='ingredients' onChange={(e) => {
-        setIngredients(e.target.value)
-      }} />
+      <input type="text" placeholder='ingredients' value={ingredients} onChange={handleIngredientsChange} />
         <br /><br />
         <label htmlFor="">style food : </label>
-      <select name="type" id="" onChange={(e) => {
-        setStyle(e.target.value)
-      }}>
+      <select name="type" id="" value={style} onChange={handleStyleChange}>
         <option value="chinese">Chinese</option>
         <option value="thailand">thailand</option>
         <option value="filiphina">filiphina</option>
